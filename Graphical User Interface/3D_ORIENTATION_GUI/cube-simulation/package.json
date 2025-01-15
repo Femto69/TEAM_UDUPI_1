@@ -1,0 +1,16 @@
+{
+  "name": "mpu6050-3d-visualizer",
+  "version": "1.0.0",
+  "description": "3D visualization of MPU-6050 data using Electron and Babylon.js",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "babylonjs": "^5.0.0",
+    "serialport": "^10.4.0"
+  },
+  "devDependencies": {
+    "electron": "^20.0.0"
+  }
+}

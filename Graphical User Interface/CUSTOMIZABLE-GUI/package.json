@@ -1,0 +1,29 @@
+{ 
+  "name": "udupi-gui",
+  "version": "1.0.0",
+  "description": "Your app description",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "build": {
+    "appId": "com.yourcompany.yourappname",
+    "mac": {
+      "icon": "assets/logo.png"
+    },
+    "win": {
+      "icon": "assets/logo.png"
+    },
+    "linux": {
+      "icon": "assets/logo.png"
+    }
+  },
+  "dependencies": {
+    "@serialport/parser-readline": "^12.0.0",
+    "chart.js": "^4.0.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "date-fns": "^3.6.0",
+    "electron": "^24.0.0",
+    "serialport": "^11.0.0"
+  }
+}
