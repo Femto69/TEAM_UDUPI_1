@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tyre Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Tyre Management Dashboard</h1>
+        <div id="dashboard">
+            <div class="dashboard-item" id="truck-visualization">
+                <h2>Truck Visualization</h2>
+                <object type="image/svg+xml" data="cat797.svg" id="truck-svg" width="100%" height="100%"></object>
+            </div>
+            <div class="dashboard-item" id="tyre-pressure-display">
+                <h2>Tyre Pressures</h2>
+                <div class="tyre" id="front-left">Front Left: <span>--</span></div>
+                <div class="tyre" id="front-right">Front Right: <span>--</span></div>
+                <div class="tyre" id="middle-left">Middle Left: <span>--</span></div>
+                <div class="tyre" id="middle-right">Middle Right: <span>--</span></div>
+                <div class="tyre" id="rear-left">Rear Left: <span>--</span></div>
+                <div class="tyre" id="rear-right">Rear Right: <span>--</span></div>
+            </div>
+            <div class="dashboard-item" id="tkph-display">
+                <h2>Current TKPH</h2>
+                <div class="tkph-value" id="current-tkph">--</div>
+                <div class="tkph-details">
+                    <div class="tkph-detail">
+                        <span class="detail-label">Mean Load:</span>
+                        <span class="detail-value" id="mean-load-value">--</span>
+                        <span class="detail-unit">tonnes</span>
+                    </div>
+                    <div class="tkph-detail">
+                        <span class="detail-label">Avg Speed:</span>
+                        <span class="detail-value" id="avg-speed-value">--</span>
+                        <span class="detail-unit">km/h</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-item" id="tkph-chart-container">
+                <h2>TKPH Trend</h2>
+                <div class="chart-container">
+                    <canvas id="tkphChart"></canvas>
+                </div>
+            </div>
+            <div class="dashboard-item" id="pressure-chart-container">
+                <h2>Tyre Pressure Trend</h2>
+                <div class="chart-container">
+                    <canvas id="pressureChart"></canvas>
+                </div>
+            </div>
+            <div class="dashboard-item" id="maintenance-log">
+                <h2>Maintenance Log</h2>
+                <ul id="maintenance-list"></ul>
+                <input type="text" id="maintenance-entry" placeholder="Enter maintenance activity">
+                <button id="add-maintenance">Add Entry</button>
+            </div>
+        </div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>

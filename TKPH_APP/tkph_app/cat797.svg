@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">
+  <!-- Background (optional) -->
+  <rect width="1000" height="600" fill="#f0f0f0"/>
+
+  <!-- Truck body -->
+  <path d="M100 400 L100 250 L300 250 L400 150 L850 150 L950 250 L950 400 Z" fill="#FDB813" stroke="#000" stroke-width="3"/>
+
+  <!-- Truck cab -->
+  <path d="M100 250 L100 400 L250 400 L300 250 Z" fill="#1E1E1E" stroke="#000" stroke-width="3"/>
+
+  <!-- Windows -->
+  <path d="M120 270 L120 380 L240 380 L280 270 Z" fill="#A5DBFF" stroke="#000" stroke-width="2"/>
+
+  <!-- Dump bed -->
+  <path d="M300 250 L400 150 L850 150 L950 250 L950 400 L300 400 Z" fill="#FDB813" stroke="#000" stroke-width="3"/>
+  <path d="M400 150 L450 250 L850 250 L850 150 Z" fill="#E5A710" stroke="#000" stroke-width="2"/>
+
+  <!-- Front grill and details -->
+  <rect x="100" y="400" width="150" height="30" fill="#1E1E1E" stroke="#000" stroke-width="2"/>
+  <rect x="120" y="410" width="110" height="10" fill="#888" stroke="#000" stroke-width="1"/>
+
+  <!-- Headlights -->
+  <circle cx="130" cy="425" r="10" fill="#FFFFFF" stroke="#000" stroke-width="1"/>
+  <circle cx="220" cy="425" r="10" fill="#FFFFFF" stroke="#000" stroke-width="1"/>
+
+  <!-- Company logo (simplified CAT logo) -->
+  <text x="500" y="280" font-family="Arial Black" font-size="60" fill="#000" text-anchor="middle">CAT</text>
+
+  <!-- Tyres -->
+  <g id="front-left-tyre">
+    <circle id="front-left-outer" cx="250" cy="480" r="70" fill="#1E1E1E" stroke="#000" stroke-width="3"/>
+    <circle id="front-left-pressure" cx="250" cy="480" r="50" fill="#333" stroke="#000" stroke-width="2"/>
+    <text id="front-left-pressure" x="250" y="485" font-family="Arial" font-size="20" fill="white" text-anchor="middle">FL</text>
+  </g>
+
+  <g id="front-right-tyre">
+    <circle id="front-right-outer" cx="250" cy="520" r="70" fill="#1E1E1E" stroke="#000" stroke-width="3"/>
+    <circle id="front-right-pressure" cx="250" cy="520" r="50" fill="#333" stroke="#000" stroke-width="2"/>
+    <text id="front-right-pressure" x="250" y="525" font-family="Arial" font-size="20" fill="white" text-anchor="middle">FR</text>
+  </g>
+
+  <g id="middle-left-tyre">
+    <circle id="middle-left-outer" cx="650" cy="480" r="70" fill="#1E1E1E" stroke="#000" stroke-width="3"/>
+    <circle id="middle-left-pressure" cx="650" cy="480" r="50" fill="#333" stroke="#000" stroke-width="2"/>
+    <text id="middle-left-pressure" x="650" y="485" font-family="Arial" font-size="20" fill="white" text-anchor="middle">ML</text>
+  </g>
+
+  <g id="middle-right-tyre">
+    <circle id="middle-right-outer" cx="650" cy="520" r="70" fill="#1E1E1E" stroke="#000" stroke-width="3"/>
+    <circle id="middle-right-pressure" cx="650" cy="520" r="50" fill="#333" stroke="#000" stroke-width="2"/>
+    <text id="middle-right-pressure" x="650" y="525" font-family="Arial" font-size="20" fill="white" text-anchor="middle">MR</text>
+  </g>
+
+  <g id="rear-left-tyre">
+    <circle id="rear-left-outer" cx="750" cy="480" r="70" fill="#1E1E1E" stroke="#000" stroke-width="3"/>
+    <circle id="rear-left-pressure" cx="750" cy="480" r="50" fill="#333" stroke="#000" stroke-width="2"/>
+    <text id="rear-left-pressure" x="750" y="485" font-family="Arial" font-size="20" fill="white" text-anchor="middle">RL</text>
+  </g>
+
+  <g id="rear-right-tyre">
+    <circle id="rear-right-outer" cx="750" cy="520" r="70" fill="#1E1E1E" stroke="#000" stroke-width="3"/>
+    <circle id="rear-right-pressure" cx="750" cy="520" r="50" fill="#333" stroke="#000" stroke-width="2"/>
+    <text id="rear-right-pressure" x="750" y="525" font-family="Arial" font-size="20" fill="white" text-anchor="middle">RR</text>
+  </g>
+
+  <!-- Ladder -->
+  <path d="M300 250 L300 400 M310 260 L310 400 M300 280 L310 280 M300 320 L310 320 M300 360 L310 360" fill="none" stroke="#000" stroke-width="2"/>
+</svg>
