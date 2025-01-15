@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TEAM_UDUPI_GUI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/folium/1.5.0/folium.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-tilelayer-colorpicker/1.0.0/leaflet-tilelayer-colorpicker.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .graph-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .graph-row {
+            display: flex;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        .graph {
+            width: 100%; /* Changed from calc(50% - 20px) */
+            margin-bottom: 40px; /* Add some vertical spacing */
+        }
+        .scroller {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory; /* For snap scrolling */
+            padding: 20px;
+        }
+
+        /* Ensure each map takes equal width and height */
+        .map-container {
+            min-width: 100vw;
+            height: 80vh;
+            scroll-snap-align: start;
+            margin-right: 20px;
+            color:white;
+        }
+
+        /* General style for each map */
+        #map2011, #map2012, #map2013 {
+            height: 100%; /* Maps take the entire height of the container */
+        }
+        @media (min-width: 1200px) { /* Increased from 768px */
+    .graph-row {
+        display: flex;
+    }
+    .graph {
+        width: calc(50% - 20px);
+    }
+}
+        .graph h2 {
+            color: #3498db;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        #main-title {
+            background-color: #3498db;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .source-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .source-link a {
+            display: inline-block;
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .source-link a:hover {
+            background-color: #2980b9;
+        }
+        #map {
+            height: 600px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }/* ... (existing styles remain unchanged) ... */
+    </style>
+</head>
+<body>
+    <header>
+        <img src="assets/logo.png" alt="Application Logo" id="app-logo">
+        <h1>GRAPHICAL USER INTERFACE</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#" id="home-button">Home</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropbtn">Charts</a>
+                <div class="dropdown-content">
+                    <a href="#" class="chart-link" data-chart="gyro">Gyroscope</a>
+                    <a href="#" class="chart-link" data-chart="accel">Accelerometer</a>
+                    <a href="#" class="chart-link" data-chart="temp">Temperature</a>
+                    <a href="#" class="chart-link" data-chart="altitude">Altitude</a>
+                    <a href="#" class="chart-link" data-chart="pressure">Pressure</a>
+                    <a href="#" class="chart-link" data-chart="humidity">Humidity</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+    <main>
+        <div id="controls">
+            <select id="port-select"></select>
+            <button id="connect-button">Connect</button>
+            <button id="export-button">Export Data</button>
+        </div>
+        <div id="error-message" style="display: none; color: red;"></div>
+        <div id="loading-indicator" class="hidden">Loading...</div>
+        <div id="data-display-container">
+            <div id="gyro-display" class="data-display">Waiting for gyro data...</div>
+            <div id="accel-display" class="data-display">Waiting for accelerometer data...</div>
+            <div id="temp-display" class="data-display">Waiting for temperature data...</div>
+        </div>
+        <div id="charts-container">
+            <div id="top-charts">
+                <div class="chart-wrapper">
+                    <canvas id="gyro-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="accel-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="temp-chart"></canvas>
+                </div>
+            </div>
+            <div id="data-display-container">
+                <div id="altitude-display" class="data-display">Waiting for altitude data...</div>
+                <div id="pressure-display" class="data-display">Waiting for pressure data...</div>
+                <div id="humidity-display" class="data-display">Waiting for humidity data...</div>
+            </div>
+            <div id="bottom-charts">
+                <div class="chart-wrapper">
+                    <canvas id="altitude-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="pressure-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="humidity-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="renderer.js"></script>
+    <script src="script.js"></script>
+    <!-- ... (existing content remains unchanged) ... -->
+    <h1 id="main-title">Climate Change Dashboard with Antarctica Visualization</h1>
+    
+    <div class="graph-container">
+        <div class="graph-row">
+            <div class="graph">
+                <h2>Ocean Heat Content Anomalies</h2>
+                <div id="plot" style="width:100%;height:400px;"></div>
+            </div>
+            <div class="graph">
+                <h2>CO2 Levels Over Time</h2>
+                <div id="plot-2" style="width:100%;height:400px;"></div>
+            </div>
+        </div>
+        
+        <div class="graph-row">
+            <div class="graph">
+                <h2>Global Sea Level Rise</h2>
+                <div id="plot-3" style="width:100%;height:400px;"></div>
+            </div>
+            <div class="graph">
+                <h2>Average Methane Concentration</h2>
+                <div id="plot-4" style="width:100%;height:400px;"></div>
+            </div>
+        </div>
+        
+        <div class="graph-row">
+            <div class="graph">
+                <h2>Global Average Temperature</h2>
+                <div id="plot-5" style="width:100%;height:400px;"></div>
+            </div>
+            <div class="graph">
+                <h2>Arctic Sea Ice Extent</h2>
+                <div id="plot-6" style="width:100%;height:400px;"></div>
+            </div>
+        </div>
+        
+        <div class="graph-row">
+            <div class="graph">
+                <h2>Antarctic Mass Measurement</h2>
+                <div id="plot-7" style="width:100%;height:400px;"></div>
+            </div>
+        </div>
+    </div>
+   
+
+    <script>
+        // ... (existing script content remains unchanged) ...
+        d3.csv('ohc_levitus_climdash_seasonal.csv').then(function(data) {
+            var years = data.map(function(d) { return d['Year']; });
+            var heatContent = data.map(function(d) { return d['heat content anomaly (10^22  Joules)']; });
+
+            var trace1 = {
+                x: years,
+                y: heatContent,
+                mode: 'lines+markers',
+                marker: { color: 'red' },
+                line: { shape: 'linear' },
+                name: 'Heat Content Anomaly',
+                hovertemplate: '<b>Year</b>: %{x}<br><b>Heat Content Anomaly</b>: %{y} x10^22 Joules<extra></extra>'
+            };
+
+            var layout1 = {
+                title: 'Ocean Heat Content Anomalies Over Time',
+                xaxis: { title: 'Year', rangeslider: { visible: true } },
+                yaxis: { title: 'Heat Content Anomaly (x10^22 Joules)' },
+                hovermode: 'x',
+                template: 'plotly_white',
+                height: 400,
+                width: '100%'
+            };
+
+            Plotly.newPlot('plot', [trace1], layout1);
+        });
+    </script>
+    <script>
+        d3.csv('co2_mm_mlo.csv').then(function(data) {
+            data.forEach(function(d) {
+                d.Date = new Date(d.year, d.month - 1);
+            });
+
+            var dates = data.map(function(d) { return d.Date; });
+            var co2Average = data.map(function(d) { return +d['average']; });
+            var deseasonalizedCO2 = data.map(function(d) { return +d['deseasonalized']; });
+            var months = data.map(function(d) { return +d['month']; });
+            var sdev = data.map(function(d) { return +d['sdev']; });
+
+            var traceAvgCO2 = {
+                x: dates,
+                y: co2Average,
+                mode: 'lines+markers',
+                name: 'Average CO2',
+                line: { color: 'blue' },
+                error_y: { type: 'data', array: sdev, visible: true },
+                hovertemplate: '<b>Date</b>: %{x|%Y-%m}<br><b>CO2 Average</b>: %{y} ppm<extra></extra>'
+            };
+
+            var traceDeseasonalizedCO2 = {
+                x: dates,
+                y: deseasonalizedCO2,
+                mode: 'lines+markers',
+                name: 'Deseasonalized CO2',
+                line: { color: 'green', dash: 'dash' },
+                hovertemplate: '<b>Date</b>: %{x|%Y-%m}<br><b>CO2 Deseasonalized</b>: %{y} ppm<extra></extra>'
+            };
+
+            var traceMonthlyTrend = {
+                x: dates,
+                y: co2Average,
+                mode: 'markers',
+                name: 'Monthly Trend',
+                marker: { size: 10, color: months, colorscale: 'Viridis', showscale: true },
+                hovertemplate: '<b>Date</b>: %{x|%Y-%m}<br><b>CO2</b>: %{y} ppm<extra></extra>'
+            };
+
+            var layout2 = {
+                title: 'CO2 Levels Over Time with Monthly Trends',
+                xaxis: { title: 'Year', rangeslider: { visible: true } },
+                yaxis: { title: 'CO2 Average (ppm)' },
+                hovermode: 'x',
+                template: 'plotly_white',
+                height: 400,
+                width: '100%'
+            };
+
+            Plotly.newPlot('plot-2', [traceAvgCO2, traceDeseasonalizedCO2, traceMonthlyTrend], layout2);
+        });
+    </script>
+    <script>
+        d3.csv('Global_sea_level_rise.csv').then(function(data) {
+            // Parse the year and convert to date objects
+            data.forEach(function(d) {
+                d.Date = new Date(d.year, 0); // January of the year
+                d['mmfrom1993-2008average'] = +d['mmfrom1993-2008average'];
+            });
+
+            var years = data.map(function(d) { return d.Date; });
+            var seaLevel = data.map(function(d) { return d['mmfrom1993-2008average']; });
+
+            // Simple Moving Average (SMA) Calculation
+            var windowSize = 5;
+            var sma = [];
+            for (var i = 0; i < seaLevel.length; i++) {
+                if (i < windowSize - 1) {
+                    sma.push(null);
+                } else {
+                    var sum = 0;
+                    for (var j = 0; j < windowSize; j++) {
+                        sum += seaLevel[i - j];
+                    }
+                    sma.push(sum / windowSize);
+                }
+            }
+
+            // Identify key events for annotations
+            var startYear = data.reduce((a, b) => (a['mmfrom1993-2008average'] < b['mmfrom1993-2008average'] ? a : b));
+            var risingConcernYear = data.reduce((a, b) => (a.SMA > b.SMA ? a : b));
+            var thresholdValue = d3.quantile(seaLevel, 0.9);
+            var heightenedAwarenessYear = data.find(d => d['mmfrom1993-2008average'] >= thresholdValue);
+
+            // Main line plot
+            var traceSeaLevel = {
+                x: years,
+                y: seaLevel,
+                mode: 'lines+markers',
+                name: 'Average Sea Level Rise',
+                line: { color: 'royalblue' },
+                hovertemplate: '<b>Date</b>: %{x|%Y}<br><b>Sea Level Rise</b>: %{y} mm<extra></extra>'
+            };
+
+            // SMA plot
+            var traceSMA = {
+                x: years,
+                y: sma,
+                mode: 'lines',
+                name: 'Simple Moving Average',
+                line: { color: 'orange', dash: 'dash' },
+                hovertemplate: '<b>Date</b>: %{x|%Y}<br><b>SMA</b>: %{y:.2f} mm<extra></extra>'
+            };
+
+            // Layout configuration
+            var layout3 = {
+                title: 'Global Sea Level Rise Over Time with Key Events',
+                xaxis: { title: 'Year', rangeslider: { visible: true } },
+                yaxis: { title: 'Average Sea Level Rise (mm)' },
+                hovermode: 'x unified',
+                template: 'plotly_white',
+                height: 400,
+                width: '100%',
+                annotations: [
+                    {
+                        x: startYear.Date,
+                        y: startYear['mmfrom1993-2008average'],
+                        text: `Start Year (${startYear.year})`,
+                        showarrow: true,
+                        arrowhead: 2,
+                        ax: 0,
+                        ay: -40,
+                        font: { color: 'green' }
+                    },
+                    {
+                        x: risingConcernYear.Date,
+                        y: risingConcernYear.SMA,
+                        text: `Rising Concern (${risingConcernYear.year})`,
+                        showarrow: true,
+                        arrowhead: 2,
+                        ax: 0,
+                        ay: -40,
+                        font: { color: 'red' }
+                    },
+                    {
+                        x: heightenedAwarenessYear.Date,
+                        y: heightenedAwarenessYear['mmfrom1993-2008average'],
+                        text: `Heightened Awareness (${heightenedAwarenessYear.year})`,
+                        showarrow: true,
+                        arrowhead: 2,
+                        ax: 0,
+                        ay: -40,
+                        font: { color: 'orange' }
+                    }
+                ]
+            };
+
+            Plotly.newPlot('plot-3', [traceSeaLevel, traceSMA], layout3);
+        });
+    </script>
+    <script>
+        d3.csv('Global_monthly_mean_ch4.csv').then(function(data) {
+            var years = data.map(function(d) { return d['year']; });
+            var methaneConcentration = data.map(function(d) { return +d['average']; });
+
+            var traceMethane = {
+                x: years,
+                y: methaneConcentration,
+                mode: 'lines+markers',
+                name: 'Average Methane Concentration',
+                line: { color: 'green', width: 2 },
+                marker: { size: 5, color: 'green', symbol: 'circle' },
+                hovertemplate: '<b>Year</b>: %{x}<br><b>Methane Concentration</b>: %{y} ppb<extra></extra>'
+            };
+
+            var layout4 = {
+                title: 'Average Methane Concentration Over Years',
+                xaxis: { title: 'Year', rangeslider: { visible: true } },
+                yaxis: { title: 'Methane Concentration (ppb)' },
+                hovermode: 'x unified',
+                template: 'plotly_white',
+                height: 400,
+                width: '100%'
+            };
+
+            Plotly.newPlot('plot-4', [traceMethane], layout4);
+        });
+    </script>
+
+    <script>
+        d3.csv('Global_annual_mean_temp.csv').then(function(data) {
+            var years = data.map(function(d) { return d['Year']; });
+            var noSmoothingTemp = data.map(function(d) { return +d['No_Smoothing']; });
+            var lowessTemp = data.map(function(d) { return +d['Lowess']; });
+
+            var traceNoSmoothing = {
+                x: years,
+                y: noSmoothingTemp,
+                mode: 'lines+markers',
+                name: 'No Smoothing (Raw Data)',
+                line: { color: 'blue', width: 2 },
+                marker: { size: 5, color: 'blue', symbol: 'circle' },
+                hovertemplate: '<b>Year</b>: %{x}<br><b>No Smoothing Temp</b>: %{y}°C<extra></extra>'
+            };
+
+            var traceLowess = {
+                x: years,
+                y: lowessTemp,
+                mode: 'lines+markers',
+                name: 'LOWESS (Smoothed Trend)',
+                line: { color: 'red', width: 2 },
+                marker: { size: 5, color: 'red', symbol: 'circle' },
+                hovertemplate: '<b>Year</b>: %{x}<br><b>Smoothed Temp</b>: %{y}°C<extra></extra>'
+            };
+
+            var layout5 = {
+                title: 'Global Average Temperature Over Time (No Smoothing vs LOWESS)',
+                xaxis: { title: 'Year', rangeslider: { visible: true } },
+                yaxis: { title: 'Temperature Anomaly (°C)' },
+                hovermode: 'x unified',
+                template: 'plotly_white',
+                height: 400,
+                width: '100%'
+            };
+
+            Plotly.newPlot('plot-5', [traceNoSmoothing, traceLowess], layout5);
+        });
+    </script>
+    <script>
+        d3.csv('arctic_ice_extent.csv').then(function(data) {
+            var years = data.map(function(d) { return d['year']; });
+            var iceExtent = data.map(function(d) { return +d['extent']; });
+
+            var traceIceExtent = {
+                x: years,
+                y: iceExtent,
+                mode: 'lines+markers',
+                name: 'Ice Extent (Million km²)',
+                line: { color: 'deepskyblue', width: 2 },
+                marker: { size: 5, color: 'deepskyblue', symbol: 'circle' },
+                hovertemplate: '<b>Year</b>: %{x}<br><b>Ice Extent</b>: %{y} million km²<extra></extra>'
+            };
+
+            var layout6 = {
+                title: 'Arctic Sea Ice Extent Over Time',
+                xaxis: { title: 'Year', rangeslider: { visible: true } },
+                yaxis: { title: 'Sea Ice Extent (Million km²)' },
+                hovermode: 'x unified',
+                template: 'plotly_white',
+                height: 400,
+                width: '100%'
+            };
+
+            Plotly.newPlot('plot-6', [traceIceExtent], layout6);
+        });
+    </script>
+
+    
+    <script>
+        d3.csv('Antartica_mass.csv').then(function(data) {
+            var years = data.map(function(d) { return d['year']; });
+            var antarcticMass = data.map(function(d) { return +d['Antarctic mass']; });
+            var massUpper = data.map(function(d) { return +d['mass_upper']; });
+            var massLower = data.map(function(d) { return +d['mass_lower']; });
+    
+            var traceMass = {
+                x: years,
+                y: antarcticMass,
+                mode: 'lines+markers',
+                name: 'Mass (Gigaton)',
+                line: { color: 'blue', width: 2 },
+                marker: { size: 5, color: 'blue', symbol: 'circle' },
+                hovertemplate: '<b>Year</b>: %{x}<br><b>Mass</b>: %{y} GT<extra></extra>'
+            };
+    
+            var traceUpper = {
+                x: years,
+                y: massUpper,
+                fill: null,
+                mode: 'lines',
+                line: { width: 0, color: 'rgba(0,100,80,0.5)' },  // Slightly darker for visibility
+                name: 'Upper Bound'
+            };
+    
+            var traceLower = {
+                x: years,
+                y: massLower,
+                fill: 'tonexty',
+                mode: 'lines',
+                line: { width: 0, color: 'rgba(255,0,0,0.3)' }, // Changed to a brighter color for visibility
+                name: 'Lower Bound',
+                hoverinfo: 'skip'  // Skip hover information for the bounds
+            };
+    
+            var layout7 = {
+                title: 'Mass Measurement with Antarctic mass 1-sigma uncertainty (Gigaton)',
+                xaxis: { title: 'Year of Observation', rangeslider: { visible: true } },
+                yaxis: { title: 'Mass (Gigaton)' },
+                hovermode: 'x unified',
+                template: 'plotly_white',
+                height: 400,
+                width: '100%'
+            };
+    
+            Plotly.newPlot('plot-7', [traceMass, traceUpper, traceLower], layout7);
+        });
+        // Antarctica Circle Visualization Script
+        // Initialize the map centered over Antarctica
+    </script>
+    
+    <div class="scroller">
+        <div class="map-container">
+            <h2>Antarctica Circle Visualization - 1990</h2>
+            <div id="map2011"></div>
+        </div>
+        <div class="map-container">
+            <h2>Antarctica Circle Visualization - 2000</h2>
+            <div id="map2012"></div>
+        </div>
+        <div class="map-container">
+            <h2>Antarctica Circle Visualization - 2010</h2>
+            <div id="map2013"></div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+    // Initialize the map for 2011
+    var map2011 = L.map('map2011').setView([-75, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 10 }).addTo(map2011);
+    
+    // Initialize the map for 2012
+    var map2012 = L.map('map2012').setView([-75, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 10 }).addTo(map2012);
+    
+    // Initialize the map for 2013
+    var map2013 = L.map('map2013').setView([-75, 0], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 10 }).addTo(map2013);
+    
+    // Function to fetch CSV data for each map
+    function fetchCSV(url, map, year) {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
+            })
+            .then(data => parseCSV(data, map, year))
+            .catch(error => console.error('Error fetching CSV:', error));
+    }
+    
+    // Function to parse CSV data and add markers and circles
+    function parseCSV(data, map, year) {
+        var circleData = [];
+    
+        Papa.parse(data, {
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                var rows = results.data;
+                rows.forEach(function(row) {
+                    var lat = row['latitude'];
+                    var lon = row['longitude'];
+                    var temp = row['avg temp'];
+    
+                    // Add a marker to the map for each point
+                    if (lat && lon) {
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup('Year: ' + year + '<br>Avg Temp: ' + (temp || 'N/A'));
+    
+                        // Organize the data for circle visualization
+                        if (temp) {
+                            circleData.push({ lat: lat, lon: lon, temp: temp });
+                        }
+                    }
+                });
+    
+                // Draw circles
+                drawCircles(circleData, map, year);
+            },
+            error: function(err) {
+                console.error("Error parsing CSV:", err);
+            }
+        });
+    }
+    
+    // Function to draw circles and change color based on year
+    function drawCircles(data, map, year) {
+        data.forEach(function(item) {
+            var circleColor = getCircleColorByYear(year); // Get color based on year
+    
+            L.circle([item.lat, item.lon], {
+                radius: 200000,
+                fillOpacity: 0.5,
+                color: circleColor // Assign color based on year
+            }).addTo(map);
+        });
+    }
+    
+    // Function to get circle color based on the year
+    function getCircleColorByYear(year) {
+        switch (year) {
+            case 2011: return '#4169E1'; // Blue for 2011
+    case 2012: return '#87CEEB'; // Green for 2012
+    case 2013: return '#FFD580	'; // Red for 2013
+            default: return '#FFFFFF'; // White for undefined year
+        }
+    }
+    
+    // Fetch data for each year
+    fetchCSV('a1.csv', map2011, 2011); // Data for 2011
+    fetchCSV('a2.csv', map2012, 2012); // Data for 2012
+    fetchCSV('a3.csv', map2013, 2013); // Data for 2013
+    </script>
+</body>
+</html>
