@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Team Udupi</title>
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" integrity="sha384-/KNQL8Nu5gCHLqwqfQjA689Hhoqgi2S84SNUxC3roTe4EhJ9AfLkp8QiQcU8AMzI" crossorigin="anonymous"></script>
+
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+        <script src="https://cdn.plot.ly/plotly-2.17.1.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+         <!-- leaflets -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+        <style>
+            #satMap{
+                height: 24rem;
+            }
+            
+        </style>
+           
+        <script>
+            var myIcon = L.icon({
+                iconUrl: 'dfsd.png',
+                iconSize: [30, 40],
+                iconAnchor: [22, 94],
+                
+            });
+        </script>
+    </head>
+    <body>
+
+        <nav class=" navbar-light bg-light">
+            <div class="container-fluid " style="width: 100%;">
+                
+                <div class="row">
+                    
+                    <div class="col-lg-1"></div>
+                    <div class="col-lg-1">
+                        <a class="navbar-brand" href="#">
+                            <img src="/dtu logo.png" alt=""  height="42" class="d-inline-block align-text-top">
+                            <img src="/udupi logo-modified.png" alt=""  height="42" class="d-inline-block align-text-top">
+                            
+                        </a>
+                        
+                    </div>
+                    <div class="col-lg-2">
+                        <a class="navbar-brand">DTU Team Udupi</a>
+                        
+                    </div>
+                    
+                    <div class="col-lg-3 nav-item-secondary">
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-secondary" >
+                                <a href="/" class="navbar-brand" >Graph</a>
+                            </button>
+                            <button type="button" class="btn btn-secondary" >
+                                <a href="/"  class="navbar-brand">Telemetry</a>
+                            </button>
+                            <button type="button" class="btn btn-secondary" >
+                                <a href="/" class="navbar-brand">Retrive</a>
+                            </button>
+                            
+                        </div>
+                    </div>
+
+                    <div class="col col-lg-2">
+                        <h4>Battery: xxx%</h4>
+                    </div>
+                    <div class="col-lg-2">
+                        <h4 class="navvar-brand">
+                            <center>Control Panel</center>
+                        </h4>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </nav>
+
+
+        <!-- Graphs -->
+       <!-- h1 id="sample"></h1> -->
+       <!-- <div id="chart" ></div> -->
+        <div class="container-fluid" style="margin: 0cm;" >
+            <div class="row">
+                <div class="col col-lg-6">
+                    <div class="row">
+                        <div id="chart" ></div>  
+                    </div>
+                     <div class="row">
+                        <div class="col-lg-6">
+                            <div id="chart1" ></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div id="chart2" ></div> 
+                        </div> 
+                    </div>
+                </div> 
+            
+
+                <div class="col-lg-3" >
+                    <div class="container" >
+                        <div class="row" >
+                            <div id="chart3" ></div>
+                        </div>
+                        <div class="row" >
+                            <div id="chart4"  ></div>
+                        </div>
+                        <div class="row">
+                            <div id="chart5"  ></div>
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="col-lg-3 bg-secondary">
+                <div  style="height: 15rem;">
+                    PORT: 
+                    <select name="" id="" >
+                        <option selected>COM3</option>
+                        <option value="1">COM1</option>
+                        <option value="2">COM2</option>
+                    </select>
+                    Baut Rate:
+                    <select name="" id="" >
+                        <option selected>9600</option>
+                        <option value="1">4800</option>
+                        <option value="2">19200</option>
+                    </select>
+                    <button>Start</button>
+                    <br>
+                    <pre></pre>
+                    <button>Callibrate</button>
+                    
+                    <button>Stop</button>
+                    <hr>
+                    System State: 
+                    <select name="" id="" >
+                        
+                        <option selected>Assembly</option>
+                        <option value="1">LaunchPad</option>
+                        <option value="2">Ascent</option>
+                        <option value="2">Descent</option>
+                        <option value="3">Parrachute 1</option>
+                    </select>
+                    <br>
+                    <br>
+                    Command: 
+                    <select name="" id="" >
+                        <option selected>Reset</option>
+                        <option value="1">Deploy</option>
+                        <option value="2">Callibrate</option>
+                    </select>
+                    
+                </div>
+                <div class="row">
+                    <div id="satMap" ></div>
+                </div>
+                
+              </div>
+            </div>
+
+            <div class="row">
+                <div class="dt" ></div>
+            </div>
+        </div>
+
+        <!-- Control pannel -->
+
+        
+
+        
+
+
+
+        
+        <script>
+              var layout = {
+                    margin: {
+                        l: 40,
+                        r: 15,
+                        b: 25,
+                        t: 25,
+                        pad: 1
+                    },
+                    height: 400, 
+                    title:"Pitch Yaw Roll",
+            };
+            var layout1 = {
+                    margin: {
+                        l: 25,
+                        r: 35,
+                        b: 25,
+                        t: 25,
+                        pad: 1
+                    },
+                    height: 200,
+                    title:"Altitude", 
+            };
+            var layout2 = {
+                    margin: {
+                        l: 25,
+                        r: 35,
+                        b: 25,
+                        t: 25,
+                        pad: 1
+                    },
+                    height: 199,
+                    title:"Velocity", 
+            };
+            var layout3 = {
+                    margin: {
+                        l: 25,
+                        r: 35,
+                        b: 25,
+                        t: 25,
+                        pad: 1
+                    },
+                    height: 198,
+                    title:"Pressure", 
+            };
+            var layout4 = {
+                    margin: {
+                        l: 25,
+                        r: 35,
+                        b: 25,
+                        t: 25,
+                        pad: 1
+                    },
+                    height: 197,
+                    title:"Temperature", 
+            };
+            var layout5 = {
+                    margin: {
+                        l: 25,
+                        r: 35,
+                        b: 25,
+                        t: 25,
+                        pad: 1
+                    },
+                    height: 196,
+                    title:"Y-Acceleration", 
+            };
+
+            function getData(){
+                    return Math.floor(Math.random() * (1000-1)+1) / 100;
+            };
+            Plotly.newPlot(chart,[{
+                    y:[getData()],
+                    
+                    type:'scatter'
+                    
+                },{
+                    y:[getData()],
+                    type:'scatter'
+                },{
+                    y:[getData()],
+                    
+                    type:'scatter'
+                }],layout);
+
+            Plotly.newPlot(chart1,[{
+                    y:[getData()],
+                    type:'line'
+                }], layout1);
+                
+                Plotly.newPlot(chart2,[{
+                    y:[getData()],
+                    type:'line'
+            
+                }],layout2);
+                
+                Plotly.newPlot(chart4,[{
+                    y:[getData()],
+                    type:'line'
+                }], layout4);
+                
+                Plotly.newPlot(chart3,[{
+                    y:[getData()],
+                    type:'line'
+                }], layout3);
+                
+                Plotly.newPlot(chart5,[{
+                    y:[getData()],
+                    type:'line'
+                }], layout5);
+
+                // Table
+
+
+                const createT = (theds) => {
+                    const dT = document.querySelector("div.dt");
+                    let T = document.createElement("table");
+                    T.className = 'T';
+                    T.classList.add("table");
+                    T.classList.add("table-bordered");
+
+                    let Th = document.createElement("thead");
+                    Th.className = 'Th';
+
+                    let Thr = document.createElement("tr");
+                    Thr.className ='Thr';
+
+                    theds.forEach(header =>{
+                        let rH = document.createElement("th");
+                        rH.innerText = header;
+                        Thr.append(rH);
+                    });
+                    Th.append(Thr);
+                    T.append(Th);
+
+                    let Tb = document.createElement('tbody');
+                    Tb.className = "Tb";
+
+                    T.append(Tb);
+                    dT.append(T);
+                
+                }
+                
+         // add any row
+
+         const appendR = (data) =>{
+                    const T = document.querySelector('.T');
+                    var Tbr = T.insertRow(1);
+                    //Tbr.className = 'Tbr';
+                    var al = data.length;
+                    
+                    for(let i = 0 ; i < al; i++){
+                        let cell = Tbr.insertCell(i);
+                        cell.innerHTML = data[i];
+                    }
+                    
+                    
+                    // Tbr.append(teamId,missionTime,packetCount);
+                    
+                    // //const Tb = document.querySelector(".Tb");
+                    
+                    // T.appendChild(Tbr);
+
+                }
+
+                let theds = ["Team Id", "Mission Time", "Packet Count", "Altitude", "Pressure", "Temp", "Voltage", "GPS Time", "GPS Latitude", "GPS Longitude", "GPS Altitude", "GPS STATS", "Software State", "Pitch", "Roll", "Yaw"];
+                createT(theds);
+            
+
+            setInterval(function(){
+
+
+              
+            
+            var socket = io();
+            var parData;
+            var x = [];
+            //setTimeout(
+                socket.on('data', function(fr){
+                partData = fr.split(" ");
+                document.getElementById('sample').innerHTML = Math.abs(Number(partData[10]));
+                
+            });
+            //,1);
+            
+            x[0] = partData[0];
+            x[1] = Math.abs(Number(partData[1]));
+                x[2] = Math.abs(Number(partData[2]));
+                x[3] = Math.abs(Number(partData[3]));
+                x[4] = Math.abs(Number(partData[4]));
+                x[5] = Math.abs(Number(partData[5]));
+                x[6] = Math.abs(Number(partData[6]));
+                x[7] = Math.abs(Number(partData[7]));
+                 x[8] = Math.abs(Number(partData[8]));
+                 x[9] = Math.abs(Number(partData[9]));
+                 x[10] = Math.abs(Number(partData[10]));
+                x[11] = Math.abs(Number(partData[11]));
+                x[12] = Math.abs(Number(partData[12]));
+                x[13] = Math.abs(Number(partData[13]));
+                //x[14] = Math.abs(Number(partData[14]));
+
+
+             // random initilisation
+
+             
+
+
+            // Graphs
+           
+            Plotly.extendTraces('chart',{y:[[x[10]]]},[0]);  // ori x
+            Plotly.extendTraces('chart',{y:[[x[11]]]},[1]); //ori y
+            Plotly.extendTraces('chart',{y:[[x[12]]]},[2]);  //ori z
+            Plotly.extendTraces('chart1',{y:[[x[4]]]},[0]);  // altitude
+            Plotly.extendTraces('chart2',{y:[[x[13]]]},[0]); //velocity
+            Plotly.extendTraces('chart3',{y:[[x[3]]]},[0]);   //Pressure
+            Plotly.extendTraces('chart4',{y:[[x[5]]]},[0]);  //temp
+            Plotly.extendTraces('chart5',{y:[[x[8]]]},[0]);  //Yacceleration
+
+            
+
+            // Table
+
+            data = [x[1],x[2],x[0],x[13],x[3],x[4],x[5],x[6],getData(),getData(),getData(),getData(),getData(),x[10],x[12],x[11]];
+                    appendR(data);
+
+            
+
+            // Plotly.newPlot(chart,[{
+            //         y:[getData()],
+                    
+            //         type:'scatter'
+                    
+            //     },{
+            //         y:[getData()],
+            //         type:'scatter'
+            //     },{
+            //         y:[getData()],
+                    
+            //         type:'scatter'
+            //     }],layout);
+                // setInterval(function(){
+                //     Plotly.extendTraces('chart',{y:[[getData()]]},[0]);
+                //     Plotly.extendTraces('chart',{y:[[getData()]]},[1]);
+                //     Plotly.extendTraces('chart',{y:[[getData()]]},[2]);
+
+                // },2000);
+                // Plotly.newPlot(chart1,[{
+                //     y:[getData()],
+                //     type:'line'
+                // }], layout1);
+                // setInterval(function(){
+                //     Plotly.extendTraces('chart1',{y:[[getData()]]},[0]);
+                // },2000);
+                // Plotly.newPlot(chart2,[{
+                //     y:[getData()],
+                //     type:'line'
+            
+                // }],layout1);
+                // setInterval(function(){
+                //     Plotly.extendTraces('chart2',{y:[[getData()]]},[0]);
+                // },2000);
+                // Plotly.newPlot(chart4,[{
+                //     y:[getData()],
+                //     type:'line'
+                // }], layout1);
+                // setInterval(function(){
+                //     Plotly.extendTraces('chart4',{y:[[getData()]]},[0]);
+                // },2000);
+                // Plotly.newPlot(chart3,[{
+                //     y:[getData()],
+                //     type:'line'
+                // }], layout1);
+                // setInterval(function(){
+                //     Plotly.extendTraces('chart3',{y:[[getData()]]},[0]);
+                // },2000);
+                // Plotly.newPlot(chart5,[{
+                //     y:[getData()],
+                //     type:'line'
+                // }], layout1);
+                // setInterval(function(){
+                //     Plotly.extendTraces('chart5',{y:[[getData()]]},[0]);
+                // },2000);
+            
+                },1000);
+        </script>
+
+    </body>
+    <footer>
+        <!-- <script src="page.js"></script> -->
+    </footer>
+</html>

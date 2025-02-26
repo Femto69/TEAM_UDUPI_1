@@ -1,0 +1,1 @@
+{"name":"cansatgui","version":"1.0.0","description":"gcs gui","main":"index.js","scripts":{"test":"echo \"Error: no test specified\" && exit 1"},"author":"","license":"ISC","dependencies":{"express":"^4.18.2","fs":"^0.0.1-security","line-reader":"^0.4.0","node":"^20.2.0","plotly.js":"^2.23.1","socket.io":"^4.6.1"}}
